@@ -1,6 +1,7 @@
+import { ApiError } from "@/lib/ApiError";
 import { client } from "@/lib/client"
-import { useParams, useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query"
+import { useParams, useRouter } from "next/navigation";
 
 const useRoom = () => {
 
@@ -15,7 +16,7 @@ const useRoom = () => {
 
             return res?.data
         },
-        onSuccess: (res)=> {
+        onSuccess: (res) => {
             router.push(`/chat-room/${res?.data?.roomId}`)
         }
     })
@@ -26,9 +27,16 @@ const useRoom = () => {
         mutationFn: async () => {
             const res = await client?.room?.destroy({ id: roomId }).delete();
 
+            if (res?.error) {
+                throw new ApiError(
+                    res?.error?.value?.message ?? "Something went wrong",
+                    res?.error?.status ?? 500
+                );
+            }
+
             return res?.data
         },
-        onSuccess: ()=> {
+        onSettled: () => {
             router.push(`/`)
         }
     })

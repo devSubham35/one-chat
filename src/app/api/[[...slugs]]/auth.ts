@@ -1,4 +1,5 @@
 import Elysia from "elysia"
+import { redis } from "@/lib/redis";
 import { ApiError } from "@/lib/ApiError";
 
 
@@ -25,22 +26,17 @@ export const authMiddleware = new Elysia({
         const roomId = params?.id ?? query?.roomId;
         const token = cookie["x-auth-token"]?.value;
 
-        // if (!roomId || !token) {
-        //     throw new ApiError("Missing room id or token", 401);
-        // }
+        if (!roomId || !token) {
+            throw new ApiError("Missing room id or token", 401);
+        }
 
+        const connected = await redis.hget<string[]>(`room:${roomId}`, "connected")
 
-        // const existingRoom = await prisma.room.findUnique({ where: { id: roomId } });
-
-        // if (!existingRoom) {
-        //     throw new ApiError("Room not found", 404, "AuthError");
-        // }
-
-        // if (!existingRoom?.connected.includes(token)) {
-        //     throw new ApiError("Invalid token", 401, "AuthError");
-        // }
+        if (!connected?.includes(String(token))) {
+            throw new ApiError("Invalid token", 400);
+        }
 
         return {
-            auth: { token, roomId }
+            auth: { token, roomId, connected }
         }
     })

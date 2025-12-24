@@ -3,6 +3,7 @@ import { Elysia } from "elysia";
 import { redis } from "@/lib/redis";
 import { ApiError } from "@/lib/ApiError";
 import { ApiResponse } from "@/lib/ApiResponse";
+import { authMiddleware } from "@/app/api/[[...slugs]]/auth";
 
 const ROOM_TTL_DURATION = 60 * 10
 
@@ -29,9 +30,10 @@ export const room = new Elysia({ prefix: "/room" })
     )
 
     ///////////////////////////////////
-    /// Destroy Room ( Public )
+    /// Destroy Room ( Protected )
     ///////////////////////////////////
 
+    .use(authMiddleware)
     .delete('/destroy/:id',
         async ({ params: { id } }) => {
 
