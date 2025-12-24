@@ -5,21 +5,19 @@ import ChatInput from "./ChatInput";
 import useRoom from "@/hook/useRoom";
 import ChatHeader from "./ChatHeader";
 import ChatSection from "./ChatSection";
-// import { getUserId } from "@/lib/utils";
-// import { useParams } from "next/navigation";
 
 const ChatUI = () => {
 
-    // const userId = getUserId();
     const [value, setValue] = useState("");
-    const { roomId, destroyRoomMutate, isCreateRoomPending } = useRoom();
+    const { roomId, destroyRoomMutate, isCreateRoomPending, sendMessageMutate } = useRoom();
 
 
 
     const handleSend = () => {
         if (!value.trim()) return;
-        console.log(value, "++66 Message")
-        setValue("");
+        sendMessageMutate(value, {
+            onSuccess: () => setValue("")
+        })
     };
 
 

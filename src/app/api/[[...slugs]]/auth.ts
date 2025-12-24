@@ -21,22 +21,21 @@ export const authMiddleware = new Elysia({
             error: "Internal Server Error - from auth middleware"
         };
     })
-    .derive({ as: "scoped" }, async ({ params, query, cookie }) => {
+    .derive({ as: "scoped" }, async ({ query, cookie }) => {
+        const roomId = query.roomId
+        const token = cookie["x-auth-token"].value as string | undefined
 
-        const roomId = params?.id ?? query?.roomId;
-        const token = cookie["x-auth-token"]?.value;
+        console.log(roomId, "++66")
 
         if (!roomId || !token) {
-            throw new ApiError("Missing room id or token", 401);
+            throw new ApiError("Missing roomId or token.", 400)
         }
 
-        const connected = await redis.hget<string[]>(`room:${roomId}`, "connected")
+        const connected = await redis.hget<string[]>(`meta:${roomId}`, "connected")
 
-        if (!connected?.includes(String(token))) {
-            throw new ApiError("Invalid token", 400);
+        if (!connected?.includes(token)) {
+            throw new ApiError("Invalid token", 400)
         }
 
-        return {
-            auth: { token, roomId, connected }
-        }
+        return { auth: { roomId, token, connected } }
     })

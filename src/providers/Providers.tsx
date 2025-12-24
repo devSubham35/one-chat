@@ -3,6 +3,7 @@
 import { toast } from "sonner";
 import { useState } from "react";
 import type { BaseApiResponse } from "@/lib/types";
+import { RealtimeProvider } from "@upstash/realtime/client";
 import { QueryClient, QueryClientProvider, MutationCache } from "@tanstack/react-query";
 
 const Providers = ({ children }: { children: React.ReactNode }) => {
@@ -41,9 +42,11 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
   );
 
   return (
-    <QueryClientProvider client={queryClient}>
-      {children}
-    </QueryClientProvider>
+    <RealtimeProvider>
+      <QueryClientProvider client={queryClient}>
+        {children}
+      </QueryClientProvider>
+    </RealtimeProvider>
   );
 };
 
