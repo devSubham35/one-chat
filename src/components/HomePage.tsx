@@ -1,14 +1,14 @@
 "use client"
 
-import { useRouter } from "next/navigation";
+import useRoom from "@/hook/useRoom";
 import { useEffect, useState } from "react";
 import { getUserId, persistUserId } from "@/lib/utils";
 
 
 const HomePage = () => {
 
-    const router = useRouter();
     const [userId, setUserId] = useState<string>("");
+    const { createRoomMutate, isCreateRoomPending } = useRoom();
 
     /// Fetch and set the user_id
     useEffect(() => {
@@ -44,10 +44,10 @@ const HomePage = () => {
                 />
                 <button
                     disabled={false}
-                    onClick={()=> router.push("/chat-room/12345678")}
+                    onClick={()=> createRoomMutate()}
                     className="w-full py-3 flex justify-center items-center bg-white text-zinc-800 font-bold mt-2
                     cursor-pointer hover:bg-white/80 transition-colors duration-300 text-[14px] lg:text-base disabled:bg-white/20">
-                    {`CREATE SECURE ROOM ${false ? "..." : ""}`}
+                    {`CREATE SECURE ROOM ${isCreateRoomPending ? "..." : ""}`}
                 </button>
 
                 <div className="my-3 w-full flex items-center text-zinc-600">

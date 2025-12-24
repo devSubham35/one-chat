@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import ChatInput from "./ChatInput";
+import useRoom from "@/hook/useRoom";
 import ChatHeader from "./ChatHeader";
 import ChatSection from "./ChatSection";
 // import { getUserId } from "@/lib/utils";
@@ -11,7 +12,8 @@ const ChatUI = () => {
 
     // const userId = getUserId();
     const [value, setValue] = useState("");
-    // const { roomId } = useParams<{ roomId: string }>();
+    const { roomId, destroyRoomMutate, isCreateRoomPending } = useRoom();
+
 
 
     const handleSend = () => {
@@ -24,9 +26,10 @@ const ChatUI = () => {
     return (
         <div className="w-full h-screen relative z-50">
             <ChatHeader
+                roomId={roomId}
                 isConnected={true}
-                handleDestroyRoom={()=> {}}
-                isDestroyRoomPending={false}
+                handleDestroyRoom={destroyRoomMutate}
+                isDestroyRoomPending={isCreateRoomPending}
             />
 
             <div className="w-full h-[calc(100vh-205px)] flex justify-center items-center overflow-hidden">

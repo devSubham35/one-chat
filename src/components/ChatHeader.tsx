@@ -1,7 +1,6 @@
 "use client";
 
-import { formatTime } from "@/lib/utils";
-import { useParams } from "next/navigation";
+import { formatTimeRemaining } from "@/lib/utils";
 import { useCallback, useEffect, useState } from "react";
 
 
@@ -11,15 +10,14 @@ type RoomDetails = {
     expiredAt: Date | null;
 }
 interface ChatHeaderProps {
+    roomId: string,
     isConnected?: boolean,
+    handleDestroyRoom: () => void,
     isDestroyRoomPending?: boolean,
     roomDetails?: RoomDetails | undefined,
-    handleDestroyRoom: (roomId: string) => void,
 }
 
-const ChatHeader = ({ isConnected, roomDetails, handleDestroyRoom, isDestroyRoomPending }: ChatHeaderProps) => {
-
-    const { roomId } = useParams<{ roomId: string }>();
+const ChatHeader = ({ roomId, isConnected, roomDetails, handleDestroyRoom, isDestroyRoomPending }: ChatHeaderProps) => {
 
 
     const [copyText, setCopyText] = useState("COPY");
@@ -53,7 +51,7 @@ const ChatHeader = ({ isConnected, roomDetails, handleDestroyRoom, isDestroyRoom
 
             if (diffInSeconds === 0) {
                 clearInterval(interval);
-                handleDestroyRoom(roomId);
+                handleDestroyRoom?.();
             }
         }, 1000);
 
@@ -96,7 +94,7 @@ const ChatHeader = ({ isConnected, roomDetails, handleDestroyRoom, isDestroyRoom
                 <div>
                     <h4 className="text-zinc-500 text-sm sm:text-base">Self_Destruct</h4>
                     <h4 className="text-yellow-500 text-[14px] sm:text-[16px]">
-                        {timeLeft !== null ? formatTime(timeLeft) : "--:--"}
+                        {timeLeft !== null ? formatTimeRemaining(timeLeft) : "--:--"}
                     </h4>
                 </div>
 
@@ -112,8 +110,8 @@ const ChatHeader = ({ isConnected, roomDetails, handleDestroyRoom, isDestroyRoom
 
                     {/* DESTROY BUTTON */}
                     <button
+                        onClick={handleDestroyRoom}
                         disabled={isDestroyRoomPending}
-                        onClick={() => handleDestroyRoom(roomId)}
                         className="w-fit sm:w-auto px-4 py-2.5 bg-zinc-800 rounded-lg text-red-500
                     text-sm hover:bg-zinc-800/80 cursor-pointer active:scale-95 transition-transform whitespace-nowrap disabled:bg-white/20"
                     >
